@@ -29,6 +29,9 @@ npm-debug.log*
 
 # QA screenshots (generated locally)
 site/qa/screenshots/
+site-2.0/qa/screenshots/
+site-2.0/qa/v2-screenshots/
 
 # Archives
 site/content/09-归档/
+site-2.0/content/09-归档/

@@ -67,8 +67,12 @@ scripts/
 
 ## 部署
 - 详见 DEPLOY.md
+- GitHub 仓库: https://github.com/youlanda322/apiknow
+- 线上地址: https://youlanda322.github.io/apiknow/
 - GitHub Pages Source: GitHub Actions
 - push 到 main 分支自动触发部署
+- git remote: https://github.com/youlanda322/apiknow.git
+- 独立 Node.js: E:\猫\nodejs\node.exe (v22.22.2)
 
 ## 源文档
 E:\猫\APIknow\【排版结果】新建 DOC 文档.doc（实际为 .docx 格式，WPS 创建）

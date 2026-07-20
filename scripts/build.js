@@ -1,5 +1,5 @@
 /**
- * 构建脚本：读取 content/05-已发布/*.md → 生成 site/js/articles.js
+ * 构建脚本：读取 content/05-已发布/*.md → 生成 site-2.0/js/articles.js
  * 用法: node scripts/build.js
  */
 const fs = require('fs');
@@ -15,10 +15,10 @@ marked.setOptions({
 
 // 路径
 const ROOT = path.join(__dirname, '..');
-const PUBLISHED_DIR = path.join(ROOT, 'site', 'content', '05-已发布');
+const PUBLISHED_DIR = path.join(ROOT, 'site-2.0', 'content', '05-已发布');
 const CATEGORIES_PATH = path.join(ROOT, 'admin', 'data', 'categories.json');
 const SERIES_PATH = path.join(ROOT, 'admin', 'data', 'series.json');
-const OUTPUT_PATH = path.join(ROOT, 'site', 'js', 'articles.js');
+const OUTPUT_PATH = path.join(ROOT, 'site-2.0', 'js', 'articles.js');
 
 // 读取分类
 let categories;
@@ -86,7 +86,7 @@ console.log(`构建完成 → ${OUTPUT_PATH}`);
 
 function generateOutput(articles, categories, series) {
   return `// 此文件由 scripts/build.js 自动生成，请勿手动编辑
-// 源文件：site/content/05-已发布/*.md
+// 源文件：site-2.0/content/05-已发布/*.md
 // 最后构建：${new Date().toISOString()}
 // 文章数：${articles.length}
 

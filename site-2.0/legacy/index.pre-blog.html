@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APIKnow - AI API 比价测评站 | 2026 实测汇总</title>
+  <meta name="description" content="聚合各家 AI API 价格、延迟、套餐实测数据，助你快速选出性价比最高的绘图、大模型、语音 API。">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="./" class="nav-logo">
+        <span class="logo-icon">API</span>
+        APIKnow
+      </a>
+      <div class="nav-search">
+        <input type="text" id="searchInput" placeholder="搜索服务商或模型...">
+      </div>
+      <ul class="nav-links">
+        <li><a href="./" class="nav-link active">首页</a></li>
+        <li><a href="comparison.html" class="nav-link">API 比价</a></li>
+        <li><a href="calculator.html" class="nav-link">费用计算器</a></li>
+        <li><a href="review.html" class="nav-link">测评中心</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <section class="hero-banner">
+    <div class="container">
+      <div class="hero-tag">
+        <span class="dot"></span>
+        2026 AI API 实测 · 15+ 服务商
+      </div>
+      <h1 class="hero-title">AI API 推荐 2026：<span>高性价比与模型怎么选</span></h1>
+      <p class="hero-subtitle">
+        先按业务场景、预算和合规需求选择 API：比较绘图、大模型、语音 API 的按量计费与阶梯价格；<br>
+        覆盖实测数据、稳定性、文档质量和真实用户测评与避坑指南。
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value" id="providerCount">15</div>
+          <div class="hero-stat-label">已收录服务商</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">3</div>
+          <div class="hero-stat-label">覆盖 API 类型</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value" id="lastUpdate">2026-07-18</div>
+          <div class="hero-stat-label">最近更新</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">10</div>
+          <div class="hero-stat-label">实测测评</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 分类快捷按钮区 -->
+  <section class="container">
+    <div class="category-buttons">
+      <a href="comparison.html?category=drawing" class="cat-btn">
+        <span class="cat-icon">&#127912;</span>
+        <span class="cat-label">绘图 API</span>
+        <span class="cat-hint">Midjourney / SD / DALL·E</span>
+      </a>
+      <a href="comparison.html?category=llm" class="cat-btn">
+        <span class="cat-icon">&#128161;</span>
+        <span class="cat-label">大模型 API</span>
+        <span class="cat-hint">GPT / DeepSeek / Claude</span>
+      </a>
+      <a href="comparison.html?category=speech" class="cat-btn">
+        <span class="cat-icon">&#128227;</span>
+        <span class="cat-label">语音 API</span>
+        <span class="cat-hint">TTS / ASR / 音色克隆</span>
+      </a>
+      <a href="comparison.html?sort=price-asc" class="cat-btn">
+        <span class="cat-icon">&#128176;</span>
+        <span class="cat-label">性价比低价</span>
+        <span class="cat-hint">按单价排序，预算敏感</span>
+      </a>
+      <a href="review.html" class="cat-btn">
+        <span class="cat-icon">&#128214;</span>
+        <span class="cat-label">看实测测评</span>
+        <span class="cat-hint">横评与风险边界</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 30秒选方向 + 硬规则 -->
+  <section class="guide-section">
+    <div class="container">
+      <div>
+        <div class="guide-header">
+          <span class="guide-icon">&#9200;</span>
+          <h2>30 秒选 API 方向</h2>
+          <span class="guide-desc">别先看几十张卡片，先按场景、预算和合规缩小范围。</span>
+        </div>
+        <div class="guide-grid" id="guideGrid"></div>
+      </div>
+      <div class="rules-box">
+        <div class="rules-title">&#9888; 下单前的硬规则</div>
+        <ul class="rules-list" id="rulesList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 精选推荐 -->
+  <section class="container featured-section">
+    <h2 class="section-title"><span class="icon">&#9733;</span> 精选推荐</h2>
+    <div class="featured-grid" id="featuredGrid"></div>
+  </section>
+
+  <!-- 筛选区 + 全部服务商 -->
+  <section class="container" style="margin-top:40px;">
+    <h2 class="section-title"><span class="icon">&#9776;</span> 全部服务商</h2>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="categoryFilter">分类:</label>
+        <select id="categoryFilter" class="filter-select">
+          <option value="all">全部</option>
+          <option value="drawing">绘图API</option>
+          <option value="llm">大模型API</option>
+          <option value="speech">语音API</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="statusFilter">状态:</label>
+        <select id="statusFilter" class="filter-select">
+          <option value="all">全部</option>
+          <option value="VERIFIED">实测稳定</option>
+          <option value="TRIAL">支持试用</option>
+          <option value="FLOATING">价格浮动</option>
+          <option value="RISK">风险中转</option>
+          <option value="SPONSORED">商家赞助</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="sortFilter">排序:</label>
+        <select id="sortFilter" class="filter-select">
+          <option value="default">默认</option>
+          <option value="price-asc">价格从低到高</option>
+          <option value="price-desc">价格从高到低</option>
+          <option value="latency-asc">延迟从低到高</option>
+          <option value="rating-desc">评分从高到低</option>
+        </select>
+      </div>
+      <span class="results-count" id="resultsCount">共 15 家服务商</span>
+    </div>
+    <div class="card-grid" id="providerGrid"></div>
+  </section>
+
+  <!-- 状态标签说明 -->
+  <section class="container" style="margin-top:40px;">
+    <h3 class="section-title" style="font-size:var(--text-lg);">状态标签说明</h3>
+    <div class="card-badges" style="margin-top:16px;gap:10px;">
+      <span class="badge badge-verified">&#10004; 实测稳定</span>
+      <span class="badge badge-floating">&#9888; 价格浮动</span>
+      <span class="badge badge-risk">&#10008; 风险中转</span>
+      <span class="badge badge-trial">&#9733; 支持试用</span>
+      <span class="badge badge-sponsored">&#9830; 商家赞助</span>
+    </div>
+    <p class="text-sm text-muted mt-4" style="margin-top:16px;color:var(--text-muted);font-size:var(--text-sm);line-height:1.7;">
+      所有价格和状态均由人工定期复核更新，仅供参考。实际价格以服务商官网为准。中转 API 存在封号、断供风险，重要业务建议官方直签。赞助商家已做明确标识，测评内容保持独立客观。
+    </p>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h3>APIKnow</h3>
+          <p>AI API 比价测评站 — 聚合绘图、大模型、语音 API 的价格、延迟、套餐和真实测评数据。用数据帮你做选择，帮你避坑。</p>
+        </div>
+        <div class="footer-col">
+          <h4>页面导航</h4>
+          <a href="./">首页</a>
+          <a href="comparison.html">API 比价</a>
+          <a href="calculator.html">费用计算器</a>
+          <a href="review.html">测评中心</a>
+        </div>
+        <div class="footer-col">
+          <h4>关于本站</h4>
+          <a href="#">关于我们</a>
+          <a href="#">更新日志</a>
+          <a href="#">数据来源</a>
+          <a href="#">联系我们</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 APIKnow. 数据驱动，独立测评。</span>
+        <div class="footer-disclaimer">
+          本站仅做价格展示、测评科普和信息聚合，不售卖API、不托管Key、不做中转服务。价格仅供参考，实时价格以服务商官方为准。
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 渲染 30秒选方向
+      const guideGrid = document.getElementById('guideGrid');
+      if (guideGrid && typeof quickGuides !== 'undefined') {
+        guideGrid.innerHTML = quickGuides.map(g => `
+          <a href="${g.link}" class="guide-card">
+            <div class="guide-card-title">
+              <span class="g-icon" style="color:${g.accent};">${g.icon}</span>
+              ${g.title}
+            </div>
+            <div class="guide-card-desc">${g.desc}</div>
+            <div class="guide-card-sub" style="color:${g.accent};">&#10132; 进入分类</div>
+          </a>
+        `).join('');
+      }
+
+      // 渲染硬规则
+      const rulesList = document.getElementById('rulesList');
+      if (rulesList && typeof hardRules !== 'undefined') {
+        rulesList.innerHTML = hardRules.map(r => `<li>${r}</li>`).join('');
+      }
+
+      // 更新统计数据
+      if (typeof providers !== 'undefined') {
+        document.getElementById('providerCount').textContent = providers.length;
+        const dates = providers.map(p => p.lastUpdated).sort().reverse();
+        if (dates.length > 0) {
+          document.getElementById('lastUpdate').textContent = dates[0];
+        }
+      }
+
+      // 初始化精选和筛选
+      initFeaturedSection();
+      initHomeFilter();
+    });
+  </script>
+
+</body>
+</html>

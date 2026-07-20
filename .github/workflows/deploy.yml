@@ -2,7 +2,7 @@
 # APIKnow - GitHub Pages 自动构建与部署
 # ========================================================
 # 触发条件：push 到 main 分支，或手动触发
-# 执行流程：安装依赖 → 构建文章 → 部署 site/ 到 GitHub Pages
+# 执行流程：安装依赖 → 构建文章 → 部署 site-2.0/ 到 GitHub Pages
 # ========================================================
 
 name: Deploy to GitHub Pages
@@ -11,10 +11,11 @@ on:
   push:
     branches: [main, master]
     paths:
-      - 'site/content/**'
-      - 'site/js/data.js'
-      - 'site/css/**'
-      - 'site/*.html'
+      - 'site-2.0/content/**'
+      - 'site-2.0/js/data.js'
+      - 'site-2.0/js/stations.js'
+      - 'site-2.0/css/**'
+      - 'site-2.0/*.html'
       - 'admin/data/categories.json'
       - 'admin/data/series.json'
       - 'scripts/build.js'
@@ -55,7 +56,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: site-2.0
 
   deploy:
     needs: build

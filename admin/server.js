@@ -25,7 +25,7 @@ app.use(session({
 // 后台静态资源
 app.use('/admin/static', express.static(path.join(__dirname, 'public')));
 
-// 前台站点预览（同时 serve site/）
+// 前台站点预览（serve site-2.0/）
 app.use(express.static(config.siteDir));
 
 // 让 username 在所有 EJS 视图中可用

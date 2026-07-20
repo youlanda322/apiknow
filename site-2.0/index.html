@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>APIKnow 2.0 - AI API 中转站推荐与深度测评</title>
+  <meta name="description" content="APIKnow 2.0 提供 AI API 中转站推荐、评分体系、深度测评、关键词文章与技术指南。">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/v2.css">
+  <script src="js/lucide.min.js" defer></script>
+  <script src="js/articles.js" defer></script>
+  <script src="js/stations.js" defer></script>
+  <script src="js/v2.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><div class="container topbar-inner"><a class="brand" href="index.html"><span class="brand-mark">API</span><span>APIKnow</span><span class="version">2.0</span></a><nav class="nav" data-nav><a class="active" href="index.html">首页</a><a href="stations.html">中转站推荐</a><a href="methodology.html">中转站测评</a><a href="articles.html">深度文章</a><a href="articles.html?tag=LLM">大模型 API</a><a href="articles.html?tag=图像 API">绘图 API</a></nav><div class="nav-actions"><a class="icon-btn" href="articles.html#search" aria-label="搜索"><i data-lucide="search"></i></a><button class="icon-btn menu-btn" type="button" data-menu aria-label="打开导航" aria-expanded="false"><i data-lucide="menu"></i></button></div></div></header>
+  <main>
+    <section class="hero"><div class="container hero-grid"><div><div class="eyebrow">API 中转站决策与深度内容</div><h1>先排除风险，再比较价格与体验</h1><p>围绕“中转站推荐、中转站测评、API 工程文章”建立完整内容体系。评分展示分项证据，不用一个无法解释的总分代替判断。</p><div class="hero-actions"><a class="btn btn-primary" href="stations.html">查看中转站推荐</a><a class="btn" href="methodology.html">了解评分体系</a></div><div class="hero-note">当前站点评分为结构演示数据；录入真实站点前必须完成证据核验与商业披露。</div></div><div class="score-visual" aria-label="中转站评分卡示意"><div class="visual-head"><strong>中转站评分卡</strong><span>EVIDENCE FIRST</span></div><div class="mini-score-row"><span>稳定性</span><div class="mini-track"><i style="width:88%"></i></div><span>22/25</span></div><div class="mini-score-row"><span>价格透明</span><div class="mini-track"><i style="width:90%"></i></div><span>18/20</span></div><div class="mini-score-row"><span>兼容文档</span><div class="mini-track"><i style="width:87%"></i></div><span>13/15</span></div><div class="mini-score-row"><span>安全主体</span><div class="mini-track"><i style="width:80%"></i></div><span>12/15</span></div><div class="visual-total"><span>示例总分<br>2026-07-21 核验</span><strong>87 / S</strong></div></div></div></section>
+    <section class="keyword-band"><div class="container keyword-grid"><a class="keyword" href="stations.html"><span class="keyword-icon"><i data-lucide="route"></i></span><span><strong>中转站推荐</strong><small>按场景与风险筛选</small></span></a><a class="keyword" href="methodology.html"><span class="keyword-icon"><i data-lucide="clipboard-check"></i></span><span><strong>中转站测评</strong><small>100 分证据体系</small></span></a><a class="keyword" href="articles.html?tag=低成本"><span class="keyword-icon"><i data-lucide="badge-dollar-sign"></i></span><span><strong>低成本 API</strong><small>价格与有效结果成本</small></span></a><a class="keyword" href="articles.html?tag=OpenAI"><span class="keyword-icon"><i data-lucide="braces"></i></span><span><strong>OpenAI 兼容</strong><small>兼容边界与迁移</small></span></a><a class="keyword" href="articles.html?tag=风险"><span class="keyword-icon"><i data-lucide="shield-alert"></i></span><span><strong>避坑与风险</strong><small>密钥、余额与停服</small></span></a></div></section>
+    <section class="section section-white"><div class="container"><div class="section-head"><div><h2>中转站推荐样例</h2><p>排序先执行硬性风险规则，再按可解释分项得分比较。</p></div><a class="more" href="stations.html">查看完整推荐页 →</a></div><div class="demo-banner">演示说明：以下名称与得分仅用于展示 2.0 框架，不代表真实中转站评价或推荐。</div><div class="home-layout"><div class="station-list" data-home-stations></div><aside class="logic-panel"><h3>推荐逻辑</h3><div class="logic-step"><span>1</span><div><strong>明确用途</strong><small>模型、预算、并发、地域与合规</small></div></div><div class="logic-step"><span>2</span><div><strong>硬规则淘汰</strong><small>主体、密钥、退款与重大误导</small></div></div><div class="logic-step"><span>3</span><div><strong>证据评分</strong><small>六个维度，100 分可追溯</small></div></div><div class="logic-step"><span>4</span><div><strong>小额试用</strong><small>先非关键业务，再逐步放量</small></div></div><p><a class="more" href="methodology.html">查看评分方法 →</a></p></aside></div></div></section>
+    <section class="section"><div class="container"><div class="section-head"><div><h2>最新深度文章</h2><p>文章卡片直接显示自定义标签，支持按关键词过滤。</p></div><a class="more" href="articles.html">全部文章 →</a></div><div class="story-grid" data-home-articles></div></div></section>
+  </main>
+  <footer class="footer"><div class="container"><div class="footer-grid"><div><strong>APIKnow 2.0</strong><p>中转站推荐、证据评分与深度 API 内容。评分与商业关系分开披露。</p></div><div><strong>中转站</strong><a href="stations.html">推荐列表</a><a href="methodology.html">测评体系</a></div><div><strong>内容</strong><a href="articles.html">深度文章</a></div><div><strong>方案</strong><a href="solutions.html">内容管理选择</a><a href="methodology.html#disclosure">披露原则</a></div></div><div class="footer-bottom"><span>© 2026 APIKnow 2.0</span><span>不托管 API Key；示例得分不构成真实推荐。</span></div></div></footer>
+</body>
+</html>
