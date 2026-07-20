@@ -1,0 +1,6 @@
+[
+  { "index": "01", "title": "API从零到生产", "category": "fundamentals", "description": "从HTTP基础到生产级API设计" },
+  { "index": "02", "title": "大模型接口工程", "category": "models", "description": "LLM API集成与成本优化" },
+  { "index": "03", "title": "可靠性与排障", "category": "troubleshooting", "description": "重试、幂等、限流与熔断" },
+  { "index": "04", "title": "API选型与测评", "category": "review", "description": "实际测试多平台API的差异" }
+]

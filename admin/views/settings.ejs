@@ -1,0 +1,84 @@
+<div style="max-width:640px;">
+
+  <% if (message) { %>
+  <div class="alert alert-success"><%= message %></div>
+  <% } %>
+  <% if (error) { %>
+  <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <!-- 修改密码 -->
+  <div class="panel" style="margin-bottom:24px;">
+    <h3>修改密码</h3>
+    <form method="POST" action="/settings/password" class="settings-section">
+      <div class="form-group">
+        <label for="currentPassword">当前密码</label>
+        <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="newPassword">新密码</label>
+        <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+        <div class="hint">至少 6 位</div>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">确认新密码</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+      </div>
+      <button type="submit" class="btn">更新密码</button>
+    </form>
+  </div>
+
+  <!-- GitHub 发布配置 -->
+  <div class="panel" style="margin-bottom:24px;">
+    <h3>GitHub Pages 自动发布</h3>
+    <div style="font-size:14px;line-height:1.8;color:var(--text-secondary);">
+      <p style="margin-bottom:12px;">本站通过 <strong>GitHub Actions</strong> 自动构建并发布到 GitHub Pages，完全免费托管。</p>
+      <p style="margin-bottom:12px;"><strong>发布流程：</strong></p>
+      <ol style="padding-left:20px;margin-bottom:12px;">
+        <li>在后台写文章 → 保存为 Markdown 文件</li>
+        <li>执行 <code style="background:var(--bg-muted);padding:2px 6px;border-radius:3px;font-family:monospace;">git push</code> 推送到 GitHub 仓库</li>
+        <li>GitHub Actions 自动运行构建脚本（MD → articles.js）</li>
+        <li>构建结果自动部署到 GitHub Pages，博客即时更新</li>
+      </ol>
+      <p style="margin-bottom:8px;"><strong>配置步骤：</strong></p>
+      <ol style="padding-left:20px;margin-bottom:12px;">
+        <li>将本项目推送到 GitHub 仓库</li>
+        <li>进入仓库 <strong>Settings → Pages</strong>，Source 选择 <strong>GitHub Actions</strong></li>
+        <li>确认 <code style="background:var(--bg-muted);padding:2px 6px;border-radius:3px;">.github/workflows/deploy.yml</code> 已存在</li>
+        <li>推送代码后自动触发部署</li>
+      </ol>
+      <p>详细操作见项目根目录 <code style="background:var(--bg-muted);padding:2px 6px;border-radius:3px;">DEPLOY.md</code> 文档。</p>
+    </div>
+  </div>
+
+  <!-- 手动构建 -->
+  <div class="panel">
+    <h3>手动构建</h3>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">
+      将 <code style="background:var(--bg-muted);padding:2px 6px;border-radius:3px;">content/05-已发布/</code> 下的 Markdown 文件编译为
+      <code style="background:var(--bg-muted);padding:2px 6px;border-radius:3px;">site/js/articles.js</code>，供前台加载。
+    </p>
+    <button onclick="triggerBuild()" class="btn btn-outline">🔄 立即构建</button>
+    <div id="buildResult" style="margin-top:12px;"></div>
+  </div>
+
+</div>
+
+<script>
+function triggerBuild() {
+  const result = document.getElementById('buildResult');
+  result.innerHTML = '<div class="alert alert-info">构建中...</div>';
+  fetch('/build', { method: 'POST' })
+    .then(r => r.json())
+    .then(d => {
+      if (d.success) {
+        result.innerHTML = '<div class="alert alert-success">构建完成！已更新 articles.js</div>';
+      } else {
+        result.innerHTML = '<div class="alert alert-error">构建失败: ' + (d.error || '未知错误') + '</div>';
+      }
+    })
+    .catch(() => {
+      result.innerHTML = '<div class="alert alert-error">请求失败，请检查服务器</div>';
+    });
+}
+</script>

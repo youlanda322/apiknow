@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>APIKnow - AI API 比价测评与深度技术博客</title>
+  <meta name="description" content="APIKnow 聚合 AI API 价格、延迟、套餐与实测数据，同时提供深度的 API 协议、模型接口、生产实践技术文章。用数据帮你做选择，用工程方法帮你理解原理。">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/blog.css">
+  <script src="js/lucide.min.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/articles.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/blog.js" defer></script>
+</head>
+<body>
+  <!-- 统一导航栏 -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="./" class="nav-logo"><span class="logo-icon">API</span>APIKnow</a>
+      <ul class="nav-links">
+        <li><a href="./" class="nav-link active">首页</a></li>
+        <li><a href="comparison.html" class="nav-link">API 比价</a></li>
+        <li><a href="calculator.html" class="nav-link">费用计算器</a></li>
+        <li><a href="review.html" class="nav-link">测评中心</a></li>
+        <li><a href="articles.html" class="nav-link">深度文章</a></li>
+        <li><a href="about.html" class="nav-link">关于</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+      <div class="container">
+        <div class="hero-tag">
+          <span class="dot"></span>
+          2026 AI API 实测 · 15+ 服务商 · 10 篇深度文章
+        </div>
+        <h1 class="hero-title">AI API 推荐 2026：<span>比价、测评与深度技术</span></h1>
+        <p class="hero-subtitle">
+          聚合绘图、大模型、语音 API 的价格、延迟与套餐数据；<br>
+          同时用工程方法讲清 API 协议、鉴权、模型接口与生产实践。
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="providerCount">15</div>
+            <div class="hero-stat-label">已收录服务商</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="articleCount">10</div>
+            <div class="hero-stat-label">深度技术文章</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">6</div>
+            <div class="hero-stat-label">内容栏目</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="lastUpdate">2026-07-18</div>
+            <div class="hero-stat-label">最近更新</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 快捷入口 -->
+    <section class="container">
+      <div class="category-buttons">
+        <a href="comparison.html?category=drawing" class="cat-btn">
+          <span class="cat-icon">&#127912;</span>
+          <span class="cat-label">绘图 API</span>
+          <span class="cat-hint">Midjourney / SD / DALL·E</span>
+        </a>
+        <a href="comparison.html?category=llm" class="cat-btn">
+          <span class="cat-icon">&#128161;</span>
+          <span class="cat-label">大模型 API</span>
+          <span class="cat-hint">GPT / DeepSeek / Claude</span>
+        </a>
+        <a href="comparison.html?category=speech" class="cat-btn">
+          <span class="cat-icon">&#128227;</span>
+          <span class="cat-label">语音 API</span>
+          <span class="cat-hint">TTS / ASR / 音色克隆</span>
+        </a>
+        <a href="calculator.html" class="cat-btn">
+          <span class="cat-icon">&#128176;</span>
+          <span class="cat-label">费用计算器</span>
+          <span class="cat-hint">Token 费用快速测算</span>
+        </a>
+        <a href="articles.html" class="cat-btn">
+          <span class="cat-icon">&#128214;</span>
+          <span class="cat-label">深度文章</span>
+          <span class="cat-hint">协议 / 鉴权 / 生产实践</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 30秒选方向 + 硬规则 -->
+    <section class="guide-section">
+      <div class="container">
+        <div>
+          <div class="guide-header">
+            <span class="guide-icon">&#9200;</span>
+            <h2>30 秒选 API 方向</h2>
+            <span class="guide-desc">别先看几十张卡片，先按场景、预算和合规缩小范围。</span>
+          </div>
+          <div class="guide-grid" id="guideGrid"></div>
+        </div>
+        <div class="rules-box">
+          <div class="rules-title">&#9888; 下单前的硬规则</div>
+          <ul class="rules-list" id="rulesList"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 精选推荐 -->
+    <section class="container featured-section">
+      <h2 class="section-title" style="font-size:25px;margin-bottom:18px;"><span class="icon">&#9733;</span> 精选推荐</h2>
+      <div class="featured-grid" id="featuredGrid"></div>
+    </section>
+
+    <!-- 本期主线文章 -->
+    <section class="section section-white">
+      <div class="container featured-layout">
+        <article class="featured-story">
+          <div class="feature-kicker">本期主线 · 请求链路</div>
+          <h2 data-featured-title></h2>
+          <p data-featured-dek></p>
+          <div class="article-meta" data-featured-meta></div>
+          <div class="feature-points" data-feature-points></div>
+          <p style="margin-top:24px"><a class="text-link" data-featured-link href="article.html">阅读全文 →</a></p>
+        </article>
+        <aside class="editor-note">
+          <h3>编辑部本周关注</h3>
+          <p>接口故障常被笼统归为"服务不稳定"。本周内容把问题拆回可验证的网络、网关、应用和依赖层。</p>
+          <ul>
+            <li>为什么平均延迟会掩盖真实故障</li>
+            <li>重试何时会扩大事故</li>
+            <li>请求 ID 怎样串起证据链</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 最新深度文章 -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><div><h2 class="section-title">最新深度文章</h2><p class="section-subtitle">内容按工程问题组织，不按厂商新闻堆叠。</p></div><a class="text-link" href="articles.html">查看全部文章 →</a></div>
+        <div class="article-grid" data-latest-grid></div>
+      </div>
+    </section>
+
+    <!-- 系统化专题 -->
+    <section class="section section-white">
+      <div class="container">
+        <div class="section-head"><div><h2 class="section-title">系统化专题</h2><p class="section-subtitle">适合连续阅读，也方便后续扩展成长期内容资产。</p></div></div>
+        <div class="series-list" data-series-list></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 统一页脚 -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><strong>APIKnow</strong><p>以可复核的工程方法讲清 API。文章区分事实、实测、经验与观点；比价数据由人工定期复核更新，仅供参考。</p></div>
+        <div class="footer-col"><strong>工具</strong><a href="comparison.html">API 比价</a><a href="calculator.html">费用计算器</a><a href="review.html">测评中心</a></div>
+        <div class="footer-col"><strong>内容</strong><a href="articles.html">全部文章</a><a href="articles.html?category=practice">实战开发</a><a href="articles.html?category=review">测评对比</a></div>
+        <div class="footer-col"><strong>站点</strong><a href="about.html">关于与编辑原则</a><a href="about.html#method">内容方法</a><a href="about.html#disclosure">商业披露</a></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 APIKnow</span><span>不托管 API Key，不提供中转服务；产品信息以官方最新文档为准。</span></div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 更新统计数据
+      if (typeof providers !== 'undefined') {
+        document.getElementById('providerCount').textContent = providers.length;
+        const dates = providers.map(p => p.lastUpdated).sort().reverse();
+        if (dates.length > 0) document.getElementById('lastUpdate').textContent = dates[0];
+      }
+      if (typeof ARTICLES !== 'undefined') {
+        document.getElementById('articleCount').textContent = ARTICLES.length;
+      }
+
+      // 渲染 30秒选方向
+      const guideGrid = document.getElementById('guideGrid');
+      if (guideGrid && typeof quickGuides !== 'undefined') {
+        guideGrid.innerHTML = quickGuides.map(g => `
+          <a href="${g.link}" class="guide-card">
+            <div class="guide-card-title"><span class="g-icon">${g.icon}</span>${g.title}</div>
+            <div class="guide-card-desc">${g.desc}</div>
+            <div class="guide-card-sub">→ 进入分类</div>
+          </a>
+        `).join('');
+      }
+
+      // 渲染硬规则
+      const rulesList = document.getElementById('rulesList');
+      if (rulesList && typeof hardRules !== 'undefined') {
+        rulesList.innerHTML = hardRules.map(r => `<li>${r}</li>`).join('');
+      }
+
+      // 初始化精选和筛选（来自 main.js）
+      if (typeof initFeaturedSection === 'function') initFeaturedSection();
+      if (typeof initHomeFilter === 'function') initHomeFilter();
+    });
+  </script>
+</body>
+</html>

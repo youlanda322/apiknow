@@ -1,0 +1,51 @@
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+  <h2 style="font-size:18px;">分类管理</h2>
+  <span style="color:var(--text-muted);font-size:13px;">共 <%= categories.length %> 个分类</span>
+</div>
+
+<% if (error) { %>
+<div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<!-- 新建分类 -->
+<div class="panel" style="margin-bottom:24px;">
+  <h3>新建分类</h3>
+  <form method="POST" action="/categories" style="display:flex;gap:12px;align-items:flex-end;">
+    <div class="form-group" style="flex:0 0 200px;margin-bottom:0;">
+      <label for="id">分类 ID（英文）</label>
+      <input type="text" id="id" name="id" class="form-control" required
+        placeholder="如 fundamentals" pattern="[a-z0-9-]+" title="仅限小写字母、数字和连字符">
+    </div>
+    <div class="form-group" style="flex:1;margin-bottom:0;">
+      <label for="label">分类名称（中文）</label>
+      <input type="text" id="label" name="label" class="form-control" required
+        placeholder="如 API 基础">
+    </div>
+    <button type="submit" class="btn">+ 添加分类</button>
+  </form>
+</div>
+
+<!-- 分类列表 -->
+<% if (categories.length === 0) { %>
+<div class="empty">
+  <p>还没有分类。<a href="#id">创建第一个分类 →</a></p>
+</div>
+<% } else { %>
+<div class="category-list">
+  <% categories.forEach(c => { %>
+  <div class="category-row">
+    <span class="cat-id"><%= c.id %></span>
+    <form method="POST" action="/categories/<%= c.id %>" style="display:flex;flex:1;gap:8px;align-items:center;">
+      <input type="text" name="label" value="<%= c.label %>" class="form-control" style="flex:1;">
+      <button type="submit" class="btn btn-sm">保存</button>
+    </form>
+    <div class="cat-actions">
+      <form method="POST" action="/categories/<%= c.id %>/delete"
+        onsubmit="return confirm('确定删除分类「<%= c.label %>」？已有文章的分类ID不会自动变更。')" style="display:inline;">
+        <button type="submit" class="btn btn-sm btn-danger">删除</button>
+      </form>
+    </div>
+  </div>
+  <% }); %>
+</div>
+<% } %>

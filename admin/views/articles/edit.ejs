@@ -1,0 +1,200 @@
+<div class="article-editor">
+  <form method="POST" action="<%= isNew ? '/articles' : '/articles/' + article.slug %>" id="articleForm">
+
+    <!-- Frontmatter 字段 -->
+    <div class="panel" style="margin-bottom:20px;">
+      <h3>文章信息</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="title">标题 *</label>
+          <input type="text" id="title" name="title" class="form-control" required
+            value="<%= article ? article.title : '' %>"
+            placeholder="输入文章标题" oninput="autoSlug()">
+        </div>
+        <div class="form-group">
+          <label for="slug">URL Slug *</label>
+          <input type="text" id="slug" name="slug" class="form-control" required
+            value="<%= article ? article.slug : '' %>"
+            placeholder="english-url-slug">
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="category">分类</label>
+          <select id="category" name="category" class="form-control">
+            <% categories.forEach(c => { %>
+            <option value="<%= c.id %>" <%= article && article.category === c.id ? 'selected' : '' %>><%= c.label %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="level">难度级别</label>
+          <select id="level" name="level" class="form-control">
+            <% ['入门','基础进阶','中级','高级'].forEach(lv => { %>
+            <option value="<%= lv %>" <%= article && article.level === lv ? 'selected' : '' %>><%= lv %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reading_time">阅读时长</label>
+          <input type="text" id="reading_time" name="reading_time" class="form-control"
+            value="<%= article ? article.readingTime : '10 分钟' %>">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="tags">标签</label>
+          <input type="text" id="tags" name="tags" class="form-control"
+            value="<%= article ? article.tags : '' %>"
+            placeholder="用逗号分隔，如：HTTP, DNS, TLS">
+          <div class="hint">多个标签用英文逗号分隔</div>
+        </div>
+        <div class="form-group">
+          <label for="author">作者</label>
+          <input type="text" id="author" name="author" class="form-control"
+            value="<%= article ? article.author : 'APIKnow 编辑部' %>">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="dek">摘要 (dek)</label>
+        <textarea id="dek" name="dek" class="form-control" rows="2"
+          placeholder="一句话概括文章核心观点"><%= article ? article.dek : '' %></textarea>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="featured" name="featured" value="true"
+          <%= article && article.featured ? 'checked' : '' %>>
+        <label for="featured">设为精选文章（首页推荐位展示）</label>
+      </div>
+    </div>
+
+    <!-- Markdown 编辑器 -->
+    <div class="panel" style="margin-bottom:20px;">
+      <h3>正文内容（Markdown）</h3>
+
+      <div class="editor-layout">
+        <div class="editor-pane">
+          <div class="editor-pane-header">
+            <span>Markdown 编辑</span>
+            <div class="editor-toolbar">
+              <button type="button" onclick="insertMd('**','**','粗体')" title="粗体">B</button>
+              <button type="button" onclick="insertMd('*','*','斜体')" title="斜体"><em>I</em></button>
+              <button type="button" onclick="insertLine('## ')" title="二级标题">H2</button>
+              <button type="button" onclick="insertLine('### ')" title="三级标题">H3</button>
+              <button type="button" onclick="insertMd('[','](https://)','链接文字')" title="链接">🔗</button>
+              <button type="button" onclick="insertMd('`','`','code')" title="行内代码">&lt;/&gt;</button>
+              <button type="button" onclick="insertBlock('```\n','\n```')" title="代码块">{ }</button>
+              <button type="button" onclick="insertLine('- ')" title="列表项">•</button>
+              <button type="button" onclick="insertLine('> ')" title="引用">"</button>
+            </div>
+          </div>
+          <textarea class="editor-textarea" id="body" name="body" placeholder="在这里输入 Markdown 正文..."
+            oninput="renderPreview()"><%= article ? article.body : '' %></textarea>
+        </div>
+        <div class="editor-pane">
+          <div class="editor-pane-header">
+            <span>实时预览</span>
+            <span style="font-weight:400;text-transform:none;color:var(--text-muted);">marked.js 渲染</span>
+          </div>
+          <div class="editor-preview" id="preview"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部操作栏 -->
+    <div class="editor-actions">
+      <div class="editor-actions-left">
+        <label style="font-size:14px;font-weight:600;margin-right:4px;">保存到：</label>
+        <select name="status" class="form-control" style="width:auto;min-width:120px;">
+          <option value="draft" <%= article && article.status === 'draft' ? 'selected' : '' %>>草稿</option>
+          <option value="review" <%= article && article.status === 'review' ? 'selected' : '' %>>审核中</option>
+          <option value="published" <%= article && article.status === 'published' ? 'selected' : '' %>>已发布</option>
+        </select>
+      </div>
+      <div class="editor-actions-left">
+        <a href="/articles" class="btn btn-outline">取消</a>
+        <button type="submit" class="btn">💾 保存文章</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Marked.js for live preview -->
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.0/marked.min.js"></script>
+<script>
+// 配置 marked
+if (typeof marked !== 'undefined') {
+  marked.setOptions({ gfm: true, breaks: false });
+}
+
+// 实时预览
+function renderPreview() {
+  const md = document.getElementById('body').value;
+  const preview = document.getElementById('preview');
+  if (typeof marked !== 'undefined' && marked.parse) {
+    preview.innerHTML = marked.parse(md) || '<p style="color:var(--text-muted);">预览区为空，开始在左侧输入...</p>';
+  } else {
+    preview.innerHTML = '<p style="color:var(--text-muted);">marked.js 加载中...</p>';
+  }
+}
+
+// 自动生成 slug
+let slugManuallyEdited = false;
+document.addEventListener('DOMContentLoaded', function() {
+  const slugInput = document.getElementById('slug');
+  if (slugInput) {
+    slugInput.addEventListener('input', function() { slugManuallyEdited = true; });
+  }
+  // 初始渲染预览
+  renderPreview();
+});
+
+function autoSlug() {
+  if (slugManuallyEdited) return;
+  const title = document.getElementById('title').value;
+  const slug = title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  document.getElementById('slug').value = slug;
+}
+
+// Markdown 工具栏辅助函数
+function insertMd(before, after, placeholder) {
+  const ta = document.getElementById('body');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end) || placeholder;
+  ta.value = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
+  ta.focus();
+  ta.setSelectionRange(start + before.length, start + before.length + selected.length);
+  renderPreview();
+}
+
+function insertLine(prefix) {
+  const ta = document.getElementById('body');
+  const start = ta.selectionStart;
+  const lineStart = ta.value.lastIndexOf('\n', start - 1) + 1;
+  ta.value = ta.value.substring(0, lineStart) + prefix + ta.value.substring(lineStart);
+  ta.focus();
+  ta.setSelectionRange(start + prefix.length, start + prefix.length);
+  renderPreview();
+}
+
+function insertBlock(before, after) {
+  const ta = document.getElementById('body');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  ta.value = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
+  ta.focus();
+  ta.setSelectionRange(start + before.length, start + before.length + selected.length);
+  renderPreview();
+}
+</script>

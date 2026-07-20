@@ -1,0 +1,23 @@
+{
+  "name": "apiknow",
+  "version": "1.0.0",
+  "description": "APIKnow - AI API 比价测评与深度技术博客",
+  "private": true,
+  "scripts": {
+    "start": "node admin/server.js",
+    "dev": "node admin/server.js",
+    "build": "node scripts/build.js",
+    "migrate": "node scripts/migrate-articles.js",
+    "init-admin": "node scripts/init-admin.js",
+    "qa": "node site/qa/visual-check.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "ejs": "^3.1.10",
+    "express": "^4.19.0",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.0",
+    "gray-matter": "^4.0.3",
+    "marked": "^15.0.0"
+  }
+}

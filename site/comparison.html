@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API 比价 - APIKnow</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="./" class="nav-logo"><span class="logo-icon">API</span>APIKnow</a>
+      <div class="nav-search"><input type="text" id="searchInput" placeholder="搜索服务商..."></div>
+      <ul class="nav-links">
+        <li><a href="./" class="nav-link">首页</a></li>
+        <li><a href="comparison.html" class="nav-link active">API 比价</a></li>
+        <li><a href="calculator.html" class="nav-link">费用计算器</a></li>
+        <li><a href="review.html" class="nav-link">测评中心</a></li>
+        <li><a href="articles.html" class="nav-link">深度文章</a></li>
+        <li><a href="about.html" class="nav-link">关于</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero-banner" style="padding:40px 0 32px;">
+    <div class="container">
+      <div class="hero-tag"><span class="dot"></span>多维度对比</div>
+      <h1 class="hero-title">API <span>比价中心</span></h1>
+      <p class="hero-subtitle">价格、延迟、模型、稳定性横向对比，图表可视化，数据可排序筛选。</p>
+    </div>
+  </section>
+
+  <section class="container" style="margin-top:32px;">
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="categoryFilter">分类:</label>
+        <select id="categoryFilter" class="filter-select">
+          <option value="all">全部</option><option value="drawing">绘图API</option><option value="llm">大模型API</option><option value="speech">语音API</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="sortFilter">排序:</label>
+        <select id="sortFilter" class="filter-select">
+          <option value="default">默认</option><option value="price-asc">价格从低到高</option><option value="price-desc">价格从高到低</option><option value="latency-asc">延迟从低到高</option><option value="rating-desc">评分从高到低</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="metricFilter">图表指标:</label>
+        <select id="metricFilter" class="filter-select">
+          <option value="inputPrice">输入价格</option><option value="outputPrice">输出价格</option><option value="textToImg">出图单价</option><option value="latency">国内延迟</option>
+        </select>
+      </div>
+      <span class="results-count" id="resultsCount">共 15 家</span>
+    </div>
+  </section>
+
+  <section class="container" style="margin-top:20px;">
+    <div class="chart-container">
+      <div class="chart-container-title">&#128202; 价格 / 延迟对比</div>
+      <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
+    </div>
+  </section>
+
+  <section class="container" style="margin-top:20px;">
+    <div class="chart-container">
+      <div class="chart-container-title">&#128202; 数据详情表格</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="dataTable">
+          <thead>
+            <tr>
+              <th>服务商</th><th>分类</th><th>输入价</th><th>输出价</th><th>国内延迟</th><th>模型</th><th>状态</th><th>评分</th><th>稳定性</th><th>并发</th><th>合规</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+
+  <section class="container" style="margin-top:32px;margin-bottom:32px;">
+    <div class="info-panel">
+      <div class="info-panel-title">&#128161; 价格说明</div>
+      <p>大模型 API 价格按 "每 1M tokens" 计价；绘图 API 按 "每张" 计价；语音 API 按 "每 1K 字符 / 每小时" 计价。USD 价格按 1 USD = 7.2 CNY 换算显示。实际价格以服务商官方为准，中转 API 价格可能波动。</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand"><h3>APIKnow</h3><p>AI API 比价测评站 — 聚合绘图、大模型、语音 API 的价格、延迟、套餐和真实测评数据。</p></div>
+        <div class="footer-col"><h4>页面导航</h4><a href="./">首页</a><a href="comparison.html">API 比价</a><a href="calculator.html">费用计算器</a><a href="review.html">测评中心</a></div>
+        <div class="footer-col"><h4>关于本站</h4><a href="#">关于我们</a><a href="#">更新日志</a><a href="#">数据来源</a><a href="#">联系我们</a></div>
+      </div>
+      <div class="footer-bottom"><span>&copy; 2026 APIKnow. 数据驱动，独立测评。</span><div class="footer-disclaimer">本站仅做价格展示、测评科普和信息聚合，不售卖API、不托管Key、不做中转服务。</div></div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/charts.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let currentPage = 1, pageSize = 8;
+      let filteredProviders = [...providers];
+      let chartInstance = null;
+
+      const categoryFilter = document.getElementById('categoryFilter');
+      const sortFilter = document.getElementById('sortFilter');
+      const metricFilter = document.getElementById('metricFilter');
+      const searchInput = document.getElementById('searchInput');
+      const tableBody = document.getElementById('tableBody');
+      const resultsCount = document.getElementById('resultsCount');
+
+      function applyFilters() {
+        let list = [...providers];
+        const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        if (q) list = list.filter(p => p.name.toLowerCase().includes(q) || p.models.some(m => m.toLowerCase().includes(q)) || (p.tags || []).some(t => t.toLowerCase().includes(q)));
+        if (categoryFilter.value !== 'all') list = list.filter(p => p.category === categoryFilter.value);
+
+        const sort = sortFilter.value;
+        if (sort === 'price-asc') {
+          list.sort((a, b) => {
+            const pa = a.category === 'drawing' ? a.pricing.textToImg : a.category === 'llm' ? a.pricing.inputPer1M : a.pricing.ttsPer1K;
+            const pb = b.category === 'drawing' ? b.pricing.textToImg : b.category === 'llm' ? b.pricing.inputPer1M : b.pricing.ttsPer1K;
+            return pa - pb;
+          });
+        } else if (sort === 'price-desc') {
+          list.sort((a, b) => {
+            const pa = a.category === 'drawing' ? a.pricing.textToImg : a.category === 'llm' ? a.pricing.inputPer1M : a.pricing.ttsPer1K;
+            const pb = b.category === 'drawing' ? b.pricing.textToImg : b.category === 'llm' ? b.pricing.inputPer1M : b.pricing.ttsPer1K;
+            return pb - pa;
+          });
+        } else if (sort === 'latency-asc') list.sort((a, b) => parseFloat(a.latency.cn) - parseFloat(b.latency.cn));
+        else if (sort === 'rating-desc') list.sort((a, b) => b.rating - a.rating);
+
+        filteredProviders = list;
+        currentPage = 1;
+        renderTable();
+        renderChart();
+        if (resultsCount) resultsCount.textContent = `共 ${list.length} 家`;
+      }
+
+      function renderTable() {
+        const pages = paginate(filteredProviders, pageSize);
+        const pageItems = pages[currentPage - 1] || [];
+        tableBody.innerHTML = pageItems.map(p => {
+          const inputPrice = p.category === 'llm' ? (p.pricing.currency === 'USD' ? '$' : '¥') + p.pricing.inputPer1M : (p.category === 'drawing' ? (p.pricing.currency === 'USD' ? '$' : '¥') + p.pricing.textToImg : (p.pricing.currency === 'USD' ? '$' : '¥') + p.pricing.ttsPer1K);
+          const outputPrice = p.category === 'llm' ? (p.pricing.currency === 'USD' ? '$' : '¥') + p.pricing.outputPer1M : (p.category === 'drawing' ? (p.pricing.currency === 'USD' ? '$' : '¥') + (p.pricing.imgToImg || '-') : (p.pricing.currency === 'USD' ? '$' : '¥') + (p.pricing.asrPerHour || '-'));
+          const statusHtml = renderStatusBadges(p.statusKeys);
+          return `<tr>
+            <td><strong>${p.name}</strong><br><span class="text-xs text-muted">${p.logo}</span></td>
+            <td><span class="badge badge-category">${p.categoryLabel}</span></td>
+            <td class="col-num">${inputPrice}</td>
+            <td class="col-num">${outputPrice}</td>
+            <td class="col-center">${p.latency.cn}</td>
+            <td><span class="text-xs">${p.models.slice(0, 2).join('、')}${p.models.length > 2 ? '...' : ''}</span></td>
+            <td>${statusHtml}</td>
+            <td class="col-center">${p.rating}</td>
+            <td class="col-center">${p.uptime || '-'}</td>
+            <td class="col-center">${p.concurrencyLimit || '-'}</td>
+            <td><span class="text-xs">${p.dataCompliance || '-'}</span></td>
+          </tr>`;
+        }).join('');
+
+        renderPagination(pages.length, currentPage, (page) => {
+          currentPage = page;
+          renderTable();
+        });
+      }
+
+      function renderChart() {
+        const metric = metricFilter.value;
+        const chartData = filteredProviders.slice(0, 12).map(p => {
+          let val = 0;
+          if (metric === 'inputPrice') val = p.pricing.inputPer1M || p.pricing.textToImg || p.pricing.ttsPer1K || 0;
+          else if (metric === 'outputPrice') val = p.pricing.outputPer1M || p.pricing.imgToImg || p.pricing.asrPerHour || 0;
+          else if (metric === 'textToImg') val = p.pricing.textToImg || 0;
+          else if (metric === 'latency') val = parseFloat(p.latency.cn) || 0;
+          return { name: p.name, price: val, latency: parseFloat(p.latency.cn) || 0 };
+        }).sort((a, b) => b.price - a.price);
+
+        const canvas = document.getElementById('priceChart');
+        if (chartInstance) chartInstance.destroy();
+        const ctx = canvas.getContext('2d');
+        const color = metric === 'latency' ? '#c9892e' : '#c9a84c';
+        chartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: chartData.map(d => d.name),
+            datasets: [{
+              label: metric === 'latency' ? '延迟 (ms)' : '价格',
+              data: chartData.map(d => d.price),
+              backgroundColor: color + 'cc',
+              borderColor: color, borderWidth: 1, borderRadius: 4, barPercentage: 0.6,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false }, title: { display: false } },
+            scales: {
+              x: { grid: { color: '#eae6df', drawBorder: false }, ticks: { font: { family: "-apple-system, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" }, color: '#6b6560' } },
+              y: { grid: { display: false }, ticks: { font: { family: "-apple-system, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" }, color: '#1a1f2e' } },
+            },
+          },
+        });
+      }
+
+      categoryFilter.addEventListener('change', applyFilters);
+      sortFilter.addEventListener('change', applyFilters);
+      metricFilter.addEventListener('change', applyFilters);
+      if (searchInput) searchInput.addEventListener('input', applyFilters);
+
+      applyFilters();
+    });
+  </script>
+</body>
+</html>

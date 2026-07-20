@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>费用计算器 - APIKnow</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="./" class="nav-logo"><span class="logo-icon">API</span>APIKnow</a>
+      <ul class="nav-links">
+        <li><a href="./" class="nav-link">首页</a></li>
+        <li><a href="comparison.html" class="nav-link">API 比价</a></li>
+        <li><a href="calculator.html" class="nav-link active">费用计算器</a></li>
+        <li><a href="review.html" class="nav-link">测评中心</a></li>
+        <li><a href="articles.html" class="nav-link">深度文章</a></li>
+        <li><a href="about.html" class="nav-link">关于</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero-banner" style="padding:40px 0 32px;">
+    <div class="container">
+      <div class="hero-tag"><span class="dot"></span>费用预估</div>
+      <h1 class="hero-title">API <span>费用计算器</span></h1>
+      <p class="hero-subtitle">按实际使用量快速估算费用，支持阶梯价和多维度对比，帮你找到最优方案。</p>
+    </div>
+  </section>
+
+  <section class="container" style="margin-top:32px;">
+    <!-- 类型切换 -->
+    <div class="calc-section" style="padding-bottom:16px;">
+      <div class="calc-section-title">&#128161; 选择 API 类型</div>
+      <div class="flex gap-4" style="flex-wrap:wrap;">
+        <button class="btn btn-primary" id="btnLlm" onclick="switchType('llm')">大模型对话</button>
+        <button class="btn btn-default" id="btnDrawing" onclick="switchType('drawing')">图像生成</button>
+        <button class="btn btn-default" id="btnSpeech" onclick="switchType('speech')">语音服务</button>
+      </div>
+    </div>
+
+    <!-- 计算器主体 -->
+    <div id="calcBody"></div>
+
+    <!-- 对比图表 -->
+    <div class="chart-container" id="chartSection" style="display:none;">
+      <div class="chart-container-title">&#128202; 费用对比</div>
+      <div class="chart-wrapper"><canvas id="calcChart"></canvas></div>
+    </div>
+
+    <!-- 消耗速查表 -->
+    <div class="calc-section" id="refSection" style="margin-top:24px;">
+      <div class="calc-section-title">&#128200; 消耗速查参考</div>
+      <div id="refTable"></div>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="calc-history" id="historySection" style="margin-top:24px;display:none;">
+      <div class="calc-section-title">&#128220; 历史计算记录</div>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <footer class="site-footer" style="margin-top:48px;">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand"><h3>APIKnow</h3><p>AI API 比价测评站。</p></div>
+        <div class="footer-col"><h4>页面导航</h4><a href="./">首页</a><a href="comparison.html">API 比价</a><a href="calculator.html">费用计算器</a><a href="review.html">测评中心</a></div>
+        <div class="footer-col"><h4>关于本站</h4><a href="#">关于我们</a><a href="#">更新日志</a><a href="#">数据来源</a></div>
+      </div>
+      <div class="footer-bottom"><span>&copy; 2026 APIKnow.</span></div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    let currentType = 'llm';
+    let calcHistory = JSON.parse(localStorage.getItem('apiCalcHistory') || '[]');
+    let chartInstance = null;
+
+    function switchType(type) {
+      currentType = type;
+      document.getElementById('btnLlm').className = type === 'llm' ? 'btn btn-primary' : 'btn btn-default';
+      document.getElementById('btnDrawing').className = type === 'drawing' ? 'btn btn-primary' : 'btn btn-default';
+      document.getElementById('btnSpeech').className = type === 'speech' ? 'btn btn-primary' : 'btn btn-default';
+      renderCalcBody();
+      renderRefTable();
+      document.getElementById('chartSection').style.display = 'none';
+    }
+
+    function renderCalcBody() {
+      const cfg = calcModels[currentType];
+      const subKeys = Object.keys(cfg.subTypes);
+      let html = `<div class="calc-section"><div class="calc-section-title">&#128221; ${cfg.name}费用计算</div>`;
+      html += `<div class="calc-row">`;
+      subKeys.forEach(sk => {
+        const sub = cfg.subTypes[sk];
+        html += `<div class="calc-field">
+          <label>${sub.label}</label>
+          <input type="number" id="calc_${sk}" value="0" min="0" placeholder="${cfg.unit}数量">
+          <div class="text-xs text-muted mt-2">默认占比 ${Math.round(sub.defaultRatio * 100)}%</div>
+        </div>`;
+      });
+      html += `</div>`;
+      html += `<div class="calc-row">
+        <div class="calc-field"><label>月使用天数</label><input type="number" id="calcDays" value="30" min="1" max="31"></div>
+      </div>`;
+      html += `<div style="margin-top:16px;"><button class="btn btn-primary btn-lg" onclick="calculate()">&#128200; 开始计算</button></div>`;
+      html += `<div id="calcResult" style="margin-top:20px;"></div></div>`;
+      document.getElementById('calcBody').innerHTML = html;
+    }
+
+    function calculate() {
+      const cfg = calcModels[currentType];
+      const subKeys = Object.keys(cfg.subTypes);
+      const days = parseInt(document.getElementById('calcDays').value) || 30;
+      const results = [];
+
+      cfg.providers.forEach(prov => {
+        let total = 0;
+        subKeys.forEach(sk => {
+          const val = parseFloat(document.getElementById('calc_' + sk).value) || 0;
+          let unitPrice = 0;
+          if (currentType === 'llm') {
+            if (sk === 'input') unitPrice = prov.input;
+            else if (sk === 'output') unitPrice = prov.output;
+          } else if (currentType === 'drawing') {
+            if (sk === 'text-to-img') unitPrice = prov.textToImg || 0;
+            else if (sk === 'img-to-img') unitPrice = prov.imgToImg || 0;
+            else if (sk === 'upscale') unitPrice = prov.upscale || 0;
+          } else if (currentType === 'speech') {
+            if (sk === 'tts') unitPrice = prov.tts || 0;
+            else if (sk === 'asr') unitPrice = prov.asr || 0;
+          }
+          total += val * unitPrice * days;
+        });
+        const totalCNY = prov.currency === 'USD' ? total * 7.2 : total;
+        results.push({ name: prov.name, total: total, totalCNY: totalCNY, currency: prov.currency });
+      });
+
+      results.sort((a, b) => a.totalCNY - b.totalCNY);
+      const cheapest = results[0];
+      const mostExpensive = results[results.length - 1];
+      const savings = mostExpensive.totalCNY - cheapest.totalCNY;
+
+      let html = `<div class="calc-result-box">
+        <div class="calc-result-row">
+          <span class="calc-result-label">最省方案</span>
+          <span class="calc-result-value">${cheapest.name} <span class="text-sm" style="color:var(--text-secondary);">（${cheapest.currency === 'USD' ? '$' : '¥'}${cheapest.total.toFixed(2)}${cheapest.currency === 'USD' ? ' / ¥' + cheapest.totalCNY.toFixed(2) : ''}/月）</span></span>
+        </div>
+        <div class="calc-result-row">
+          <span class="calc-result-label">最贵方案</span>
+          <span class="calc-result-value">${mostExpensive.name} <span class="text-sm" style="color:var(--text-secondary);">（${mostExpensive.currency === 'USD' ? '$' : '¥'}${mostExpensive.total.toFixed(2)}${mostExpensive.currency === 'USD' ? ' / ¥' + mostExpensive.totalCNY.toFixed(2) : ''}/月）</span></span>
+        </div>
+        <div class="calc-result-row">
+          <span class="calc-result-label">差价</span>
+          <span class="calc-result-value" style="color:var(--accent-green);">¥${savings.toFixed(2)}/月</span>
+        </div>`;
+
+      html += `<div style="margin-top:16px;"><div class="calc-section-title" style="font-size:var(--text-md);">&#128202; 各服务商月费用</div>`;
+      results.forEach(r => {
+        const cny = r.currency === 'USD' ? r.total * 7.2 : r.total;
+        html += `<div class="calc-result-row">
+          <span class="calc-result-label">${r.name}</span>
+          <span class="calc-result-value">${r.currency === 'USD' ? '$' : '¥'}${r.total.toFixed(2)} <span class="calc-result-sub">（约 ¥${cny.toFixed(2)}）</span></span>
+        </div>`;
+      });
+      html += `</div></div>`;
+      document.getElementById('calcResult').innerHTML = html;
+
+      // 渲染图表
+      document.getElementById('chartSection').style.display = 'block';
+      const ctx = document.getElementById('calcChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+      const colors = ['#c9a84c', '#4a7c9b', '#4a7c59', '#c9892e', '#a94442'];
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: results.map(r => r.name),
+          datasets: [{
+            label: '月费用（CNY）',
+            data: results.map(r => r.totalCNY),
+            backgroundColor: results.map((_, i) => colors[i % colors.length] + 'cc'),
+            borderColor: results.map((_, i) => colors[i % colors.length]),
+            borderWidth: 1, borderRadius: 4, barPercentage: 0.6,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: '#eae6df', drawBorder: false }, ticks: { color: '#6b6560' } },
+            y: { grid: { color: '#eae6df', drawBorder: false }, ticks: { color: '#6b6560' } },
+          },
+        },
+      });
+
+      // 保存历史
+      const entry = { type: currentType, date: new Date().toLocaleString('zh-CN'), results: results.map(r => ({ name: r.name, totalCNY: r.totalCNY.toFixed(2) })) };
+      calcHistory.unshift(entry);
+      if (calcHistory.length > 5) calcHistory = calcHistory.slice(0, 5);
+      localStorage.setItem('apiCalcHistory', JSON.stringify(calcHistory));
+      renderHistory();
+    }
+
+    function renderRefTable() {
+      const cfg = calcModels[currentType];
+      let html = `<table class="data-table"><thead><tr><th>服务商</th>`;
+      const subKeys = Object.keys(cfg.subTypes);
+      subKeys.forEach(sk => html += `<th>${cfg.subTypes[sk].label}</th>`);
+      html += `<th>货币</th></tr></thead><tbody>`;
+      cfg.providers.forEach(prov => {
+        html += `<tr><td><strong>${prov.name}</strong></td>`;
+        subKeys.forEach(sk => {
+          let val = '-';
+          if (currentType === 'llm') {
+            if (sk === 'input') val = prov.input !== null ? (prov.currency === 'USD' ? '$' : '¥') + prov.input : '-';
+            else if (sk === 'output') val = prov.output !== null ? (prov.currency === 'USD' ? '$' : '¥') + prov.output : '-';
+          } else if (currentType === 'drawing') {
+            if (sk === 'text-to-img') val = prov.textToImg !== null ? (prov.currency === 'USD' ? '$' : '¥') + prov.textToImg : '-';
+            else if (sk === 'img-to-img') val = prov.imgToImg !== null ? (prov.currency === 'USD' ? '$' : '¥') + prov.imgToImg : '-';
+            else if (sk === 'upscale') val = prov.upscale !== null ? (prov.currency === 'USD' ? '$' : '¥') + prov.upscale : '-';
+          } else if (currentType === 'speech') {
+            if (sk === 'tts') val = prov.tts !== null ? (prov.currency === 'USD' ? '$' : '¥') + prov.tts : '-';
+            else if (sk === 'asr') val = prov.asr !== null ? (prov.currency === 'USD' ? '$' : '¥') + prov.asr : '-';
+          }
+          html += `<td class="col-num">${val}</td>`;
+        });
+        html += `<td class="col-center">${prov.currency}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById('refTable').innerHTML = html;
+    }
+
+    function renderHistory() {
+      if (!calcHistory.length) return;
+      document.getElementById('historySection').style.display = 'block';
+      let html = '';
+      calcHistory.forEach((h, i) => {
+        html += `<div class="calc-history-item">
+          <span><strong>${i + 1}.</strong> ${h.date} · ${h.type === 'llm' ? '大模型' : h.type === 'drawing' ? '绘图' : '语音'}</span>
+          <span>最优: ${h.results[0].name} ¥${h.results[0].totalCNY}</span>
+        </div>`;
+      });
+      document.getElementById('historyList').innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      switchType('llm');
+      renderHistory();
+    });
+  </script>
+</body>
+</html>

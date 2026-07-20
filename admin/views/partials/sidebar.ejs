@@ -1,0 +1,16 @@
+<aside class="admin-sidebar">
+  <div class="sidebar-brand">
+    <strong>APIKnow</strong>
+    <span>内容管理后台</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard" class="sidebar-link <%= title === '仪表盘' ? 'active' : '' %>">📊 仪表盘</a>
+    <a href="/articles" class="sidebar-link <%= title === '文章管理' ? 'active' : '' %>">📝 文章管理</a>
+    <a href="/articles/new" class="sidebar-link">✏️ 新建文章</a>
+    <a href="/categories" class="sidebar-link <%= title === '分类管理' ? 'active' : '' %>">📂 分类管理</a>
+    <a href="/settings" class="sidebar-link <%= title === '设置' ? 'active' : '' %>">⚙️ 设置</a>
+    <hr style="border-color:#e0e0e0;margin:12px 0;">
+    <a href="/" class="sidebar-link">🔍 站点预览</a>
+    <a href="/login/logout" class="sidebar-link" style="color:#a94442;">🚪 退出登录</a>
+  </nav>
+</aside>

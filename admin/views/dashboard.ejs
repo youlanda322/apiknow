@@ -1,0 +1,58 @@
+<div class="dashboard-stats">
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.articleCount %></div>
+    <div class="stat-label">已发布文章</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.draftCount %></div>
+    <div class="stat-label">草稿</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.categoryCount %></div>
+    <div class="stat-label">分类</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.providerCount %></div>
+    <div class="stat-label">服务商(手动)</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px;">
+  <div class="panel">
+    <h3>快捷操作</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="/articles/new" class="btn">✏️ 新建文章</a>
+      <a href="/categories" class="btn btn-outline">📂 管理分类</a>
+      <button onclick="triggerBuild()" class="btn btn-outline">🔄 重新构建</button>
+      <a href="/" class="btn btn-outline">🔍 预览站点</a>
+    </div>
+    <p style="margin-top:12px;color:#9a958e;font-size:12px;">上次构建：<%= stats.latestBuild %></p>
+  </div>
+
+  <div class="panel">
+    <h3>最近文章</h3>
+    <% if (recentArticles.length === 0) { %>
+    <p style="color:#9a958e;">还没有已发布的文章</p>
+    <% } else { %>
+    <table>
+      <thead><tr><th>标题</th><th>日期</th></tr></thead>
+      <tbody>
+        <% recentArticles.forEach(a => { %>
+        <tr>
+          <td><a href="/articles/<%= a.slug %>/edit"><%= a.title %></a></td>
+          <td><%= a.date %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+</div>
+
+<script>
+function triggerBuild() {
+  fetch('/build', { method: 'POST' }).then(r => r.json()).then(d => {
+    alert(d.success ? '构建完成！' : '构建失败: ' + d.error);
+  });
+}
+</script>

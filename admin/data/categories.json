@@ -1,0 +1,8 @@
+[
+  { "id": "fundamentals", "label": "API 基础" },
+  { "id": "models", "label": "模型与接口" },
+  { "id": "practice", "label": "实战开发" },
+  { "id": "review", "label": "测评对比" },
+  { "id": "troubleshooting", "label": "故障排查" },
+  { "id": "industry", "label": "行业观察" }
+]

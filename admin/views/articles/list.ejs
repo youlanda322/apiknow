@@ -1,0 +1,57 @@
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+  <div>
+    <a href="/articles/new" class="btn">✏️ 新建文章</a>
+    <div style="display:inline-flex;gap:8px;margin-left:16px;">
+      <a href="/articles" class="filter-link <%= statusFilter === 'all' ? 'active' : '' %>">全部</a>
+      <a href="/articles?status=published" class="filter-link <%= statusFilter === 'published' ? 'active' : '' %>">已发布</a>
+      <a href="/articles?status=draft" class="filter-link <%= statusFilter === 'draft' ? 'active' : '' %>">草稿</a>
+      <a href="/articles?status=review" class="filter-link <%= statusFilter === 'review' ? 'active' : '' %>">审核中</a>
+    </div>
+  </div>
+  <span style="color:#9a958e;font-size:13px;">共 <%= articles.length %> 篇</span>
+</div>
+
+<% if (articles.length === 0) { %>
+<div class="empty"><p>还没有文章。<a href="/articles/new">创建第一篇 →</a></p></div>
+<% } else { %>
+<table>
+  <thead>
+    <tr>
+      <th>标题</th>
+      <th>分类</th>
+      <th>状态</th>
+      <th>日期</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% articles.forEach(a => { %>
+    <tr>
+      <td>
+        <strong><%= a.title %></strong>
+        <% if (a.featured) { %><span class="badge badge-featured">精选</span><% } %>
+      </td>
+      <td><%= a.category %></td>
+      <td><span class="status-tag status-<%= a.status %>"><%= {published:'已发布',draft:'草稿',review:'审核中'}[a.status] || a.status %></span></td>
+      <td><%= a.date %></td>
+      <td class="actions">
+        <a href="/articles/<%= a.slug %>/edit<%= a.status !== 'published' ? '?status='+a.status : '' %>">编辑</a>
+        <form method="POST" action="/articles/<%= a.slug %>/delete" onsubmit="return confirm('确定删除「<%= a.title %>」？将移至归档。')" style="display:inline;">
+          <button type="submit" class="btn-link btn-danger">删除</button>
+        </form>
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
+<% } %>
+
+<style>
+.filter-link { padding:4px 10px; border:1px solid #ddd8d0; border-radius:4px; font-size:13px; color:#6b6560; text-decoration:none; }
+.filter-link.active { background:#c9a84c; color:#1a1f2e; border-color:#c9a84c; }
+.badge-featured { display:inline-block; padding:2px 6px; margin-left:6px; background:#f5eacc; color:#8a7030; border-radius:3px; font-size:11px; }
+.status-tag { display:inline-block; padding:2px 8px; border-radius:3px; font-size:12px; }
+.status-published { background:#e8f5e9; color:#4a7c59; }
+.status-draft { background:#eae6df; color:#9a958e; }
+.status-review { background:#fef5e0; color:#c9892e; }
+</style>
