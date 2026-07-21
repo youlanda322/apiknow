@@ -21,6 +21,18 @@ function gradeMeta(score) {
   return GRADE_RULES.find((rule) => score >= rule.min) || GRADE_RULES.at(-1);
 }
 
+function refundBadgeClass(policy) {
+  if (policy === "支持退款") return "badge badge-green";
+  if (policy === "部分退款") return "badge badge-amber";
+  return "badge badge-red";
+}
+
+function purityBadgeClass(status) {
+  if (status === "已检测·未掺水") return "badge badge-green";
+  if (status === "已检测·待复核") return "badge badge-amber";
+  return "badge badge-gray";
+}
+
 function stationCard(station, rank) {
   const grade = gradeMeta(station.score);
   return `
@@ -32,6 +44,10 @@ function stationCard(station, rank) {
           <div class="score-badge" style="--grade:${grade.color}"><strong>${station.score}</strong><span>${station.grade}</span></div>
         </div>
         <p>${station.summary}</p>
+        <div class="badge-row">
+          <span class="${refundBadgeClass(station.refundPolicy)}">${station.refundPolicy}</span>
+          <span class="${purityBadgeClass(station.purityTest)}">${station.purityTest}</span>
+        </div>
         <div class="tag-list">${station.tags.slice(0, 4).map((tag) => `<span>${tag}</span>`).join("")}</div>
         <div class="station-foot"><span>更新 ${station.updated}</span><a href="station.html?id=${station.id}">查看评分证据 →</a></div>
       </div>
@@ -121,7 +137,7 @@ function initStationDetail() {
   document.title = `${station.name}评分详情 - APIKnow 2.0`;
   root.innerHTML = `
     <div class="detail-intro">
-      <div><span class="demo-label">${station.evidenceStatus}</span><h1>${station.name}</h1><p>${station.summary}</p><div class="tag-list">${station.tags.map((tag) => `<span>${tag}</span>`).join("")}</div></div>
+      <div><span class="demo-label">${station.evidenceStatus}</span><h1>${station.name}</h1><p>${station.summary}</p><div class="badge-row"><span class="${refundBadgeClass(station.refundPolicy)}">${station.refundPolicy}</span><span class="${purityBadgeClass(station.purityTest)}">${station.purityTest}</span><span class="badge badge-blue">${station.latencyData}</span></div><div class="tag-list">${station.tags.map((tag) => `<span>${tag}</span>`).join("")}</div></div>
       <div class="hero-score" style="--grade:${grade.color}"><strong>${station.score}</strong><span>${station.grade} · ${grade.label}</span></div>
     </div>
     <div class="detail-grid">
